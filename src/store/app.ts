@@ -10,6 +10,17 @@ const getInitialTheme = (): LIGHT_DARK_MODE => {
 };
 export const $themeMode = atom<LIGHT_DARK_MODE>(getInitialTheme());
 export const $isNavMenuOpen = atom(false);
+
+const getInitialCollapsed = (): boolean =>
+	typeof window !== "undefined" &&
+	localStorage.getItem("sidebar-collapsed") === "true";
+export const $isSidebarCollapsed = atom<boolean>(getInitialCollapsed());
+export const setIsSidebarCollapsed = (val: boolean) => {
+	if (typeof localStorage !== "undefined") {
+		localStorage.setItem("sidebar-collapsed", String(val));
+	}
+	$isSidebarCollapsed.set(val);
+};
 export const $isBreadcrumbOpen = atom(false);
 export const $scrollProgress = atom(0);
 export const $isPageLoading = atom(false);

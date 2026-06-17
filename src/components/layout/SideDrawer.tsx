@@ -1,5 +1,9 @@
 import { useStore } from "@nanostores/react";
-import { $isNavMenuOpen, setIsNavMenuOpen } from "../../store/app";
+import {
+	$isNavMenuOpen,
+	setIsNavMenuOpen,
+	setIsSidebarCollapsed,
+} from "../../store/app";
 import Button from "../ui/Button";
 import { RpStamp } from "../ui/RpStamp";
 import I18nKey from "../../i18n/i18nKey";
@@ -78,10 +82,33 @@ export const SideDrawer = ({
 			/>
 
 			<aside
+				id="site-sidebar"
 				className={
 					"sticky top-0 left-0 h-screen w-[300px] bg-lt-ink text-lt-bg z-[10000] paper-texture flex flex-col flex-shrink-0 transition-none"
 				}
 			>
+				<button
+					type="button"
+					onClick={() => setIsSidebarCollapsed(true)}
+					className="hidden lg:flex absolute top-3 right-3 z-10 items-center justify-center w-8 h-8 text-lt-ghost hover:text-white hover:bg-white/10 transition-colors"
+					title="Ocultar panel"
+					aria-label="Ocultar panel lateral"
+				>
+					<svg
+						className="w-5 h-5"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						strokeWidth="2"
+					>
+						<path
+							strokeLinecap="round"
+							strokeLinejoin="round"
+							d="M13 5l-7 7 7 7M19 5l-7 7 7 7"
+						/>
+					</svg>
+				</button>
+
 				<div className="py-8 border-b border-white/5">
 					<div className="flex items-start gap-4 px-4">
 						<div className="w-12 h-12 bg-lt-muted/20 border border-white/10 flex-shrink-0 flex items-center justify-center">
@@ -178,6 +205,28 @@ export const SideDrawer = ({
 					</div>
 				</div>
 			</aside>
+
+			<button
+				type="button"
+				onClick={() => setIsSidebarCollapsed(false)}
+				className="sidebar-reopen fixed top-4 left-4 z-[10001] w-10 h-10 items-center justify-center bg-lt-ink text-white shadow-lg hover:bg-lt-accent transition-colors"
+				title="Mostrar panel"
+				aria-label="Mostrar panel lateral"
+			>
+				<svg
+					className="w-5 h-5"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					strokeWidth="2"
+				>
+					<path
+						strokeLinecap="round"
+						strokeLinejoin="round"
+						d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
+					/>
+				</svg>
+			</button>
 		</>
 	);
 };

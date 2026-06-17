@@ -31,6 +31,12 @@ function msg(e: unknown): string {
 	return m.replace(/^ERROR:\s*/i, "");
 }
 
+export interface TablaResult {
+	label: string;
+	columns: string[];
+	rows: unknown[][];
+}
+
 export interface EvalResult {
 	/** El SQL del estudiante corrió sin error de sintaxis/ejecución. */
 	corrio: boolean;
@@ -38,8 +44,8 @@ export interface EvalResult {
 	aprobado: boolean;
 	error?: string;
 	detalle?: string;
-	columns?: string[];
-	rows?: unknown[][];
+	/** Una o más vistas del resultado (p. ej. varias tablas creadas). */
+	tablas?: TablaResult[];
 }
 
 /** Ejecuta el SQL del estudiante en un workspace limpio y valida el ejercicio. */
@@ -66,28 +72,28 @@ export async function evaluar(
 		return { corrio: false, aprobado: false, error: msg(e) };
 	}
 
-	// Tabla / resultado a mostrar.
-	let columns: string[] | undefined;
-	let rows: unknown[][] | undefined;
-	if (ex.mostrar) {
+	// Vistas del resultado (una o más tablas/consultas).
+	const tablas: TablaResult[] = [];
+	for (const vista of ex.mostrar || []) {
 		try {
-			const r = await db.query(ex.mostrar);
+			const r = await db.query(vista.sql);
 			const fields = (r.fields ?? []) as { name: string }[];
-			columns = fields.map((f) => f.name);
-			rows = (r.rows as Record<string, unknown>[]).map((row) =>
-				columns!.map((c) => row[c]),
+			const columns = fields.map((f) => f.name);
+			const rows = (r.rows as Record<string, unknown>[]).map((row) =>
+				columns.map((c) => row[c]),
 			);
+			tablas.push({ label: vista.label, columns, rows });
 		} catch {
-			/* mostrar es opcional */
+			/* una vista puede fallar si el alumno no creó esa tabla */
 		}
 	}
 
 	// Validación.
 	try {
 		const v = await ex.validar(db);
-		return { corrio: true, aprobado: v.aprobado, detalle: v.detalle, columns, rows };
+		return { corrio: true, aprobado: v.aprobado, detalle: v.detalle, tablas };
 	} catch (e) {
-		return { corrio: true, aprobado: false, detalle: msg(e), columns, rows };
+		return { corrio: true, aprobado: false, detalle: msg(e), tablas };
 	}
 }
 

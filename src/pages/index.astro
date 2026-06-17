@@ -1,19 +1,27 @@
 ---
+import { Icon } from "astro-icon/components";
 import { siteConfig } from "../config";
 import Layout from "../layouts/Layout.astro";
 
 const metaDescription =
-	"Query Lab: plataforma educativa de la Universidad de Lima para aprender SQL paso a paso, al estilo Coursera. Unidad 1: DDL.";
+	"Query Lab: plataforma educativa de la Universidad de Lima para aprender SQL paso a paso, con videos, lecturas y un sandbox para practicar SQL real. Unidad 1: DDL.";
+
+const chips = [
+	{ icon: "terminal", t: "Sandbox SQL en vivo" },
+	{ icon: "fitness-center", t: "10 ejercicios" },
+	{ icon: "smart-display", t: "Videos + lecturas" },
+];
 
 const pasos = [
-	{ n: "1", t: "Evaluación inicial", d: "Medimos tu punto de partida." },
-	{ n: "2", t: "Videos y lecturas", d: "Cápsulas cortas + el tema en detalle, en la misma pantalla." },
-	{ n: "3", t: "Practica SQL", d: "Escribe y ejecuta SQL real en el sandbox." },
-	{ n: "4", t: "Evaluación final", d: "Cierras con tu correo @ulima.edu.pe." },
+	{ icon: "quiz", n: "1", t: "Evaluación inicial", d: "Medimos tu punto de partida." },
+	{ icon: "smart-display", n: "2", t: "Videos y lecturas", d: "Cápsulas cortas y el tema en detalle, en la misma pantalla." },
+	{ icon: "terminal", n: "3", t: "Practica SQL", d: "Escribe y ejecuta SQL real en el sandbox." },
+	{ icon: "task-alt", n: "4", t: "Evaluación final", d: "Cierras con tu correo @ulima.edu.pe." },
 ];
 
 const unidades = [
 	{
+		icon: "database",
 		n: "Unidad 1",
 		t: "DDL — Definición de Datos",
 		d: "CREATE, ALTER y DROP: cómo se moldea la estructura de una base de datos con criterio de negocio.",
@@ -22,6 +30,7 @@ const unidades = [
 		activo: true,
 	},
 	{
+		icon: "edit",
 		n: "Unidad 2",
 		t: "DML — Manipulación de Datos",
 		d: "INSERT, UPDATE y DELETE: cómo se carga y mantiene la información del día a día.",
@@ -30,6 +39,7 @@ const unidades = [
 		activo: false,
 	},
 	{
+		icon: "search",
 		n: "Unidad 3",
 		t: "DQL & DCL — Consulta y Control",
 		d: "SELECT para responder preguntas de negocio y GRANT/REVOKE para gobernar el acceso.",
@@ -41,72 +51,135 @@ const unidades = [
 ---
 
 <Layout title={siteConfig.title} description={metaDescription}>
-	<section class="w-full flex flex-col items-center px-4 pt-24 pb-16">
-		<div class="w-full max-w-[900px] flex flex-col gap-6 text-center items-center">
-			<p class="text-xs font-bold uppercase tracking-[0.2em] text-primary">
-				Universidad de Lima · Curso de SQL
-			</p>
-			<h1 class="text-4xl md:text-6xl font-bold text-lt-ink leading-[1.05]">
-				Query Lab
-			</h1>
-			<p class="text-lg md:text-xl text-lt-muted max-w-[58ch] leading-relaxed">
-				Aprende SQL paso a paso, al estilo Coursera: cada unidad combina evaluación,
-				videos, lecturas y práctica ejecutable. <strong class="text-lt-ink">Aprende con criterio de negocio</strong>,
-				no solo sintaxis.
-			</p>
-			<a
-				href="/unidad-1/"
-				class="mt-2 inline-block bg-primary text-white font-bold px-7 py-3 hover:opacity-90 transition-opacity"
-			>
-				Empezar la Unidad 1 →
-			</a>
+	<!-- HERO -->
+	<section class="ql-hero">
+		<div class="ql-hero-grid">
+			<div class="ql-hero-copy reveal" style="--d:0ms">
+				<p class="ql-eyebrow">Universidad de Lima · Curso de SQL</p>
+				<h1 class="ql-title">Query Lab</h1>
+				<p class="ql-lead">
+					Aprende SQL paso a paso, al estilo Coursera: cada unidad combina evaluación,
+					videos, lecturas y <strong>práctica ejecutable</strong>. Aprende con criterio de
+					negocio, no solo sintaxis.
+				</p>
+				<div class="ql-cta-row">
+					<a href="/unidad-1/" class="ql-btn ql-btn-primary">
+						Empezar la Unidad 1
+						<Icon name="material-symbols:arrow-forward-rounded" />
+					</a>
+					<a href="/archive/" class="ql-btn ql-btn-ghost">Ver los temas</a>
+				</div>
+				<ul class="ql-chips">
+					{chips.map((c) => (
+						<li class="ql-chip">
+							<Icon name={`material-symbols:${c.icon}`} />
+							{c.t}
+						</li>
+					))}
+				</ul>
+			</div>
+
+			<div class="ql-hero-visual reveal" style="--d:120ms" aria-hidden="true">
+				<div class="ql-code">
+					<div class="ql-code-bar">
+						<span class="ql-dot" style="background:#A33332"></span>
+						<span class="ql-dot" style="background:#C29145"></span>
+						<span class="ql-dot" style="background:#4B8D9E"></span>
+						<span class="ql-code-name">consulta.sql</span>
+					</div>
+					<pre class="ql-code-body"><span class="kw">CREATE TABLE</span> alumnos (
+  id_alumno  <span class="ty">NUMBER</span> <span class="kw">PRIMARY KEY</span>,
+  nombre     <span class="ty">VARCHAR2</span>(100) <span class="kw">NOT NULL</span>,
+  correo     <span class="ty">VARCHAR2</span>(150)
+);
+
+<span class="cm">-- ▶ Ejecutado · ✓ tabla creada</span></pre>
+				</div>
+			</div>
 		</div>
 	</section>
 
-	<section class="w-full flex flex-col items-center px-4 pb-16">
-		<div class="w-full max-w-[900px]">
-			<div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-				{pasos.map((p) => (
-					<div class="bg-lt-surface border border-lt-border p-4 flex flex-col gap-1">
-						<span class="text-2xl font-bold text-primary">{p.n}</span>
-						<span class="font-bold text-lt-ink text-sm">{p.t}</span>
-						<span class="text-xs text-lt-muted leading-snug">{p.d}</span>
+	<!-- CÓMO FUNCIONA -->
+	<section class="ql-section">
+		<div class="ql-wrap">
+			<h2 class="ql-h2">Cómo funciona cada unidad</h2>
+			<div class="ql-steps">
+				{pasos.map((p, i) => (
+					<div class="ql-step reveal" style={`--d:${i * 70}ms`}>
+						<div class="ql-step-top">
+							<span class="ql-step-ico"><Icon name={`material-symbols:${p.icon}`} /></span>
+							<span class="ql-step-n">{p.n}</span>
+						</div>
+						<h3 class="ql-step-t">{p.t}</h3>
+						<p class="ql-step-d">{p.d}</p>
 					</div>
 				))}
 			</div>
 		</div>
 	</section>
 
-	<section class="w-full flex flex-col items-center px-4 pb-28">
-		<div class="w-full max-w-[900px] flex flex-col gap-5">
-			<h2 class="text-2xl font-bold text-lt-ink">Ruta del curso</h2>
-			<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-				{unidades.map((s) => (
-					<div
-						class:list={[
-							"border p-5 flex flex-col gap-3 min-h-[220px]",
-							s.activo ? "border-primary bg-lt-bg" : "border-lt-border bg-lt-surface/50",
-						]}
-					>
-						<div class="flex items-center justify-between">
-							<span class="text-xs font-bold uppercase tracking-wider text-primary">{s.n}</span>
-							<span
-								class:list={[
-									"text-[0.65rem] font-bold uppercase tracking-wider px-2 py-0.5",
-									s.activo ? "bg-primary text-white" : "bg-lt-border/40 text-lt-muted",
-								]}
-							>
-								{s.estado}
-							</span>
+	<!-- SHOWCASE DEL SANDBOX -->
+	<section class="ql-showcase">
+		<div class="ql-wrap ql-showcase-grid">
+			<div class="ql-showcase-copy">
+				<p class="ql-eyebrow ql-eyebrow-light">Lo que nos hace distintos</p>
+				<h2 class="ql-showcase-h">Practica SQL de verdad, en el navegador</h2>
+				<p class="ql-showcase-lead">
+					Nada de teoría suelta: escribe tu consulta, ejecútala con un motor de
+					PostgreSQL real y mira la tabla que generaste. Si está bien, te lo decimos
+					al instante. <strong>10 ejercicios</strong> con corrección automática.
+				</p>
+				<a href="/unidad-1/practica/" class="ql-btn ql-btn-primary">
+					Probar el sandbox
+					<Icon name="material-symbols:terminal" />
+				</a>
+			</div>
+
+			<div class="ql-showcase-mock" aria-hidden="true">
+				<div class="ql-code">
+					<div class="ql-code-bar">
+						<span class="ql-dot" style="background:#A33332"></span>
+						<span class="ql-dot" style="background:#C29145"></span>
+						<span class="ql-dot" style="background:#4B8D9E"></span>
+						<span class="ql-code-name">sandbox</span>
+					</div>
+					<pre class="ql-code-body"><span class="kw">SELECT</span> nombre, edad <span class="kw">FROM</span> alumnos
+<span class="kw">WHERE</span> edad &gt;= 18;</pre>
+				</div>
+				<div class="ql-mock-ok">
+					<Icon name="material-symbols:check-circle-rounded" /> ¡Correcto!
+				</div>
+				<table class="ql-mock-table">
+					<thead><tr><th>nombre</th><th>edad</th></tr></thead>
+					<tbody>
+						<tr><td>Ana</td><td>20</td></tr>
+						<tr><td>Luis</td><td>22</td></tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</section>
+
+	<!-- RUTA DEL CURSO -->
+	<section class="ql-section">
+		<div class="ql-wrap">
+			<h2 class="ql-h2">Ruta del curso</h2>
+			<div class="ql-units">
+				{unidades.map((s, i) => (
+					<div class:list={["ql-unit reveal", { "is-active": s.activo }]} style={`--d:${i * 80}ms`}>
+						<div class="ql-unit-head">
+							<span class="ql-unit-ico"><Icon name={`material-symbols:${s.icon}`} /></span>
+							<span class:list={["ql-unit-badge", { "is-on": s.activo }]}>{s.estado}</span>
 						</div>
-						<h3 class="text-lg font-bold text-lt-ink leading-snug">{s.t}</h3>
-						<p class="text-sm text-lt-muted leading-relaxed flex-1">{s.d}</p>
+						<span class="ql-unit-n">{s.n}</span>
+						<h3 class="ql-unit-t">{s.t}</h3>
+						<p class="ql-unit-d">{s.d}</p>
 						{s.activo ? (
-							<a href={s.href} class="font-bold text-primary hover:underline w-fit">
-								Entrar →
+							<a href={s.href} class="ql-unit-link">
+								Entrar <Icon name="material-symbols:arrow-forward-rounded" />
 							</a>
 						) : (
-							<span class="font-semibold text-lt-ghost w-fit">En preparación</span>
+							<span class="ql-unit-soon">En preparación</span>
 						)}
 					</div>
 				))}
@@ -114,3 +187,92 @@ const unidades = [
 		</div>
 	</section>
 </Layout>
+
+<style>
+	/* Animación de entrada */
+	.reveal { animation: ql-up 0.55s cubic-bezier(0.16, 1, 0.3, 1) both; animation-delay: var(--d, 0ms); }
+	@keyframes ql-up { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+	@media (prefers-reduced-motion: reduce) { .reveal { animation: none; } }
+
+	.ql-wrap { width: 100%; max-width: 1100px; margin: 0 auto; padding: 0 1.5rem; }
+
+	/* HERO */
+	.ql-hero { padding: clamp(3.5rem, 8vw, 6rem) 1.5rem clamp(2.5rem, 6vw, 4rem); display: flex; justify-content: center; }
+	.ql-hero-grid { width: 100%; max-width: 1100px; display: grid; grid-template-columns: 1fr; gap: 2.5rem; align-items: center; }
+	@media (min-width: 940px) { .ql-hero-grid { grid-template-columns: 1.1fr 0.9fr; gap: 3rem; } }
+	.ql-eyebrow { font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.22em; color: var(--primary); margin: 0 0 1rem; }
+	.ql-title { font-size: clamp(2.75rem, 7vw, 4.5rem); font-weight: 800; line-height: 1.02; color: var(--deep-text); margin: 0 0 1.1rem; letter-spacing: -0.02em; }
+	.ql-lead { font-size: clamp(1.05rem, 2vw, 1.25rem); line-height: 1.6; color: var(--lt-muted, #6b6456); max-width: 34ch; margin: 0 0 1.6rem; }
+	.ql-lead strong { color: var(--deep-text); }
+	.ql-cta-row { display: flex; flex-wrap: wrap; gap: 0.8rem; margin-bottom: 1.6rem; }
+	.ql-btn { display: inline-flex; align-items: center; gap: 0.45rem; font-weight: 700; font-size: 0.95rem; padding: 0.8rem 1.5rem; text-decoration: none; transition: transform 0.15s, box-shadow 0.15s, background 0.15s, color 0.15s; }
+	.ql-btn :global(svg) { width: 1.15em; height: 1.15em; }
+	.ql-btn-primary { background: var(--primary); color: #fff; box-shadow: 0 8px 20px -10px rgba(15, 118, 110, 0.7); }
+	.ql-btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 26px -10px rgba(15, 118, 110, 0.8); }
+	.ql-btn-ghost { border: 1.5px solid rgba(var(--ce-ink) / 0.25); color: var(--deep-text); }
+	.ql-btn-ghost:hover { border-color: var(--primary); color: var(--primary); }
+	.ql-chips { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0.6rem; }
+	.ql-chip { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.8rem; font-weight: 600; color: var(--deep-text); background: var(--card-bg); border: 1px solid rgba(var(--ce-border) / 0.8); padding: 0.4rem 0.8rem; }
+	.ql-chip :global(svg) { width: 1.05em; height: 1.05em; color: var(--primary); }
+
+	/* Tarjeta de código (hero + showcase) */
+	.ql-code { background: #1a1814; border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 24px 50px -20px rgba(26, 24, 20, 0.55); }
+	.ql-code-bar { display: flex; align-items: center; gap: 0.45rem; padding: 0.6rem 0.9rem; border-bottom: 1px solid rgba(255,255,255,0.07); }
+	.ql-dot { width: 0.7rem; height: 0.7rem; border-radius: 50%; display: inline-block; opacity: 0.85; }
+	.ql-code-name { margin-left: auto; font-family: var(--font-mono); font-size: 0.72rem; color: rgba(244,239,226,0.5); letter-spacing: 0.05em; }
+	.ql-code-body { margin: 0; padding: 1.1rem 1.2rem; font-family: var(--font-mono); font-size: 0.86rem; line-height: 1.7; color: #f4efe2; overflow-x: auto; white-space: pre; }
+	.ql-code-body .kw { color: #6cb6b0; font-weight: 600; }
+	.ql-code-body .ty { color: #c29145; }
+	.ql-code-body .cm { color: rgba(244,239,226,0.45); font-style: italic; }
+
+	/* Secciones */
+	.ql-section { padding: clamp(2rem, 5vw, 3.5rem) 0; display: flex; justify-content: center; }
+	.ql-h2 { font-size: clamp(1.5rem, 3vw, 2rem); font-weight: 800; color: var(--deep-text); margin: 0 0 1.75rem; }
+
+	/* Pasos */
+	.ql-steps { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+	@media (min-width: 860px) { .ql-steps { grid-template-columns: repeat(4, 1fr); } }
+	.ql-step { background: var(--card-bg); border: 1px solid rgba(var(--ce-border) / 0.85); padding: 1.4rem; transition: transform 0.18s, box-shadow 0.18s, border-color 0.18s; }
+	.ql-step:hover { transform: translateY(-4px); box-shadow: 0 16px 30px -18px rgba(26,24,20,0.4); border-color: var(--primary); }
+	.ql-step-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.9rem; }
+	.ql-step-ico { display: grid; place-items: center; width: 2.5rem; height: 2.5rem; background: rgba(var(--ce-accent) / 0.12); color: var(--primary); }
+	.ql-step-ico :global(svg) { width: 1.4rem; height: 1.4rem; }
+	.ql-step-n { font-size: 1.75rem; font-weight: 800; color: rgba(var(--ce-ink) / 0.12); line-height: 1; }
+	.ql-step-t { font-size: 1rem; font-weight: 700; color: var(--deep-text); margin: 0 0 0.35rem; }
+	.ql-step-d { font-size: 0.85rem; line-height: 1.5; color: var(--lt-muted, #6b6456); margin: 0; }
+
+	/* Showcase */
+	.ql-showcase { background: rgb(var(--ce-ink)); color: var(--ce-bg, #ede6d6); padding: clamp(3rem, 7vw, 5rem) 1.5rem; display: flex; justify-content: center; position: relative; }
+	.ql-showcase::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, var(--primary), #c29145); }
+	.ql-showcase-grid { display: grid; grid-template-columns: 1fr; gap: 2.5rem; align-items: center; }
+	@media (min-width: 900px) { .ql-showcase-grid { grid-template-columns: 1fr 1fr; gap: 3.5rem; } }
+	.ql-eyebrow-light { color: #6cb6b0; }
+	.ql-showcase-h { font-size: clamp(1.6rem, 3.5vw, 2.4rem); font-weight: 800; line-height: 1.1; color: #fff; margin: 0 0 1rem; }
+	.ql-showcase-lead { font-size: 1.05rem; line-height: 1.65; color: rgba(237,230,214,0.78); margin: 0 0 1.6rem; max-width: 46ch; }
+	.ql-showcase-lead strong { color: #fff; }
+	.ql-showcase-mock { display: flex; flex-direction: column; gap: 0.75rem; }
+	.ql-mock-ok { display: inline-flex; align-items: center; gap: 0.4rem; align-self: flex-start; background: rgba(15,118,110,0.18); color: #6cb6b0; border-left: 3px solid var(--primary); font-weight: 700; font-size: 0.9rem; padding: 0.5rem 0.85rem; }
+	.ql-mock-ok :global(svg) { width: 1.2em; height: 1.2em; }
+	.ql-mock-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; background: rgba(255,255,255,0.04); }
+	.ql-mock-table th, .ql-mock-table td { text-align: left; padding: 0.5rem 0.85rem; border-bottom: 1px solid rgba(255,255,255,0.08); color: rgba(237,230,214,0.9); }
+	.ql-mock-table th { font-family: var(--font-mono); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; color: rgba(237,230,214,0.5); }
+
+	/* Unidades */
+	.ql-units { display: grid; grid-template-columns: 1fr; gap: 1.1rem; }
+	@media (min-width: 800px) { .ql-units { grid-template-columns: repeat(3, 1fr); } }
+	.ql-unit { display: flex; flex-direction: column; gap: 0.7rem; min-height: 240px; padding: 1.5rem; background: var(--card-bg); border: 1px solid rgba(var(--ce-border) / 0.85); transition: transform 0.18s, box-shadow 0.18s; }
+	.ql-unit:hover { transform: translateY(-4px); box-shadow: 0 18px 36px -20px rgba(26,24,20,0.45); }
+	.ql-unit.is-active { background: var(--page-bg); border: 2px solid var(--primary); box-shadow: 0 14px 30px -18px rgba(15,118,110,0.5); }
+	.ql-unit-head { display: flex; align-items: center; justify-content: space-between; }
+	.ql-unit-ico { display: grid; place-items: center; width: 2.6rem; height: 2.6rem; background: rgba(var(--ce-accent) / 0.12); color: var(--primary); }
+	.ql-unit-ico :global(svg) { width: 1.45rem; height: 1.45rem; }
+	.ql-unit-badge { font-size: 0.62rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; padding: 0.25rem 0.55rem; background: rgba(var(--ce-border) / 0.5); color: var(--lt-muted, #6b6456); }
+	.ql-unit-badge.is-on { background: var(--primary); color: #fff; }
+	.ql-unit-n { font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: var(--primary); }
+	.ql-unit-t { font-size: 1.1rem; font-weight: 800; line-height: 1.25; color: var(--deep-text); margin: 0; }
+	.ql-unit-d { font-size: 0.88rem; line-height: 1.55; color: var(--lt-muted, #6b6456); margin: 0; flex: 1; }
+	.ql-unit-link { display: inline-flex; align-items: center; gap: 0.35rem; font-weight: 800; color: var(--primary); text-decoration: none; width: fit-content; }
+	.ql-unit-link:hover { gap: 0.6rem; }
+	.ql-unit-link :global(svg) { width: 1.1em; height: 1.1em; }
+	.ql-unit-soon { font-weight: 700; color: var(--lt-ghost, #a89f90); }
+</style>

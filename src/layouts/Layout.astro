@@ -207,7 +207,7 @@ jsonLd["@graph"].push({
 		<link rel="preload" href="" as="image" />
 		<script>
             import { PageLifecycle } from "../scripts/page-lifecycle";
-            import { $scrollProgress, $isNavMenuOpen } from "../store/app";
+            import { $scrollProgress, $isNavMenuOpen, $isSidebarCollapsed } from "../store/app";
             // Listen to drawer state and toggle class on body
             $isNavMenuOpen.subscribe((isOpen) => {
                 if (isOpen) {
@@ -215,6 +215,10 @@ jsonLd["@graph"].push({
                 } else {
                     document.body.classList.remove('drawer-open');
                 }
+            });
+            // Colapso del sidebar (desktop): clase en <html> para evitar FOUC
+            $isSidebarCollapsed.subscribe((collapsed) => {
+                document.documentElement.classList.toggle('sidebar-collapsed', collapsed);
             });
             const syncTheme = () => {
                 const theme = localStorage.getItem('theme') || 'auto';
@@ -289,6 +293,9 @@ jsonLd["@graph"].push({
 		<ClientRouter />
 	        </head>
 	                                <body class:list={[{"is-home": isHomePage, "enable-banner": enableBanner}]} data-author={profileConfig.name} data-site={siteConfig.title}>
+                                            <script is:inline>
+                                                if (localStorage.getItem('sidebar-collapsed') === 'true') document.documentElement.classList.add('sidebar-collapsed');
+                                            </script>
                                             <div id="push-wrapper" class="transition-transform duration-300 ease-in-out">
                                                 <SideDrawer client:idle items={links.map(l => ({ label: l.name, href: l.url }))} activePath={currentPath} siteTitle={siteConfig.title} authorName={profileConfig.name} authorBio={profileConfig.bio} avatarSrc={profileConfig.avatar} />
                                                 <div id="content-main">
@@ -311,6 +318,7 @@ jsonLd["@graph"].push({
     body.drawer-open {
         overflow: hidden;
     }
+    .sidebar-reopen { display: none; }
     #push-wrapper {
         display: flex;
         width: calc(100vw + 300px);
@@ -325,6 +333,12 @@ jsonLd["@graph"].push({
         position: relative;
         min-height: 100vh;
         background-color: var(--page-bg);
+        display: flex;
+        flex-direction: column;
+    }
+    #content-main > #main-content {
+        flex: 1 0 auto;
+        min-width: 0;
     }
     /* 修正移动端顶部导航在 transform 容器中的表现 */
     #push-wrapper nav.fixed {
@@ -346,9 +360,26 @@ jsonLd["@graph"].push({
     #content-main {
         width: calc(100vw - 300px);
         flex-shrink: 1;
+        transition: width 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+    }
+    #site-sidebar {
+        transition: width 0.3s cubic-bezier(0.32, 0.72, 0, 1);
     }
     #push-wrapper nav.fixed {
         display: none !important;
+    }
+    /* Sidebar colapsado: se oculta y el contenido ocupa todo el ancho */
+    .sidebar-collapsed #site-sidebar {
+        width: 0 !important;
+        min-width: 0;
+        overflow: hidden;
+        border: 0;
+    }
+    .sidebar-collapsed #content-main {
+        width: 100vw !important;
+    }
+    .sidebar-collapsed .sidebar-reopen {
+        display: flex !important;
     }
 }
 </style>

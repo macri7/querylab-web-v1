@@ -1,12 +1,20 @@
 // Los 10 ejercicios DDL (basados en el repo patrickleon2401/Query-Lab, PostgreSQL).
 // Cada uno crea sus prerequisitos en setupSQL; `validar` confirma el resultado
 // consultando el catálogo real de PostgreSQL (information_schema / pg_*).
+// `mostrar` define una o más vistas del resultado (tablas, estructura, restricciones).
 
 import type { PGlite } from "@electric-sql/pglite";
 
 export interface Validacion {
 	aprobado: boolean;
 	detalle?: string;
+}
+
+export interface Vista {
+	/** Título de la vista de resultado. */
+	label: string;
+	/** Consulta que produce la tabla a mostrar. */
+	sql: string;
 }
 
 export interface Exercise {
@@ -19,8 +27,8 @@ export interface Exercise {
 	starter: string;
 	/** Solución de referencia. */
 	solucion: string;
-	/** Consulta para renderizar el resultado (tabla o estructura). */
-	mostrar: string;
+	/** Una o más vistas para renderizar el resultado (tablas, estructura, restricciones…). */
+	mostrar: Vista[];
 	validar: (db: PGlite) => Promise<Validacion>;
 }
 
@@ -61,6 +69,21 @@ INSERT INTO academico.cursos (id_curso,nombre,creditos) VALUES
 INSERT INTO academico.matriculas (id_matricula,id_alumno,id_curso,fecha_matricula) VALUES
  (100,1,10,DATE '2026-03-10'),(101,2,20,DATE '2026-03-11');`;
 
+// Vistas reutilizables
+const V_ALUMNOS: Vista = { label: "academico.alumnos", sql: "SELECT * FROM academico.alumnos" };
+const V_ESTRUCTURA_ALUMNOS: Vista = {
+	label: "Estructura de academico.alumnos",
+	sql: "SELECT column_name AS columna, data_type AS tipo, character_maximum_length AS longitud, is_nullable AS acepta_null FROM information_schema.columns WHERE table_schema='academico' AND table_name='alumnos' ORDER BY ordinal_position",
+};
+const V_RESTRICCIONES_ALUMNOS: Vista = {
+	label: "Restricciones de academico.alumnos",
+	sql: "SELECT tc.constraint_type AS tipo, tc.constraint_name AS nombre, kcu.column_name AS columna FROM information_schema.table_constraints tc LEFT JOIN information_schema.key_column_usage kcu ON tc.constraint_name=kcu.constraint_name AND tc.table_schema=kcu.table_schema WHERE tc.table_schema='academico' AND tc.table_name='alumnos' ORDER BY tc.constraint_type",
+};
+const V_TABLAS: Vista = {
+	label: "Tablas en el esquema academico",
+	sql: "SELECT table_name AS tabla FROM information_schema.tables WHERE table_schema='academico' ORDER BY table_name",
+};
+
 const colNames = (r: Record<string, unknown>[]) =>
 	r.map((x) => String(x.column_name));
 
@@ -73,7 +96,7 @@ export const EJERCICIOS: Exercise[] = [
 		setupSQL: "",
 		starter: "CREATE TABLE academico.alumnos (\n  -- completa las columnas\n);",
 		solucion: T_ALUMNOS,
-		mostrar: "SELECT * FROM academico.alumnos",
+		mostrar: [V_ALUMNOS, V_ESTRUCTURA_ALUMNOS],
 		validar: async (db) => {
 			const cols = colNames(
 				await rows(
@@ -101,7 +124,14 @@ export const EJERCICIOS: Exercise[] = [
 		starter:
 			"CREATE TABLE academico.cursos (\n  -- ...\n);\n\nCREATE TABLE academico.matriculas (\n  -- ... con FOREIGN KEY a alumnos y a cursos\n);",
 		solucion: `${T_CURSOS}\n\n${T_MATRICULAS}`,
-		mostrar: "SELECT * FROM academico.matriculas",
+		mostrar: [
+			{ label: "academico.cursos (creada)", sql: "SELECT * FROM academico.cursos" },
+			{ label: "academico.matriculas (creada)", sql: "SELECT * FROM academico.matriculas" },
+			{
+				label: "Claves foráneas de matriculas",
+				sql: "SELECT tc.constraint_name AS fk, kcu.column_name AS columna, ccu.table_name AS referencia_tabla, ccu.column_name AS referencia_columna FROM information_schema.table_constraints tc JOIN information_schema.key_column_usage kcu ON tc.constraint_name=kcu.constraint_name JOIN information_schema.constraint_column_usage ccu ON tc.constraint_name=ccu.constraint_name WHERE tc.table_schema='academico' AND tc.table_name='matriculas' AND tc.constraint_type='FOREIGN KEY'",
+			},
+		],
 		validar: async (db) => {
 			const cursos = await rows(
 				db,
@@ -125,7 +155,7 @@ export const EJERCICIOS: Exercise[] = [
 		setupSQL: T_ALUMNOS,
 		starter: "ALTER TABLE academico.alumnos\n  ADD ...;",
 		solucion: "ALTER TABLE academico.alumnos ADD telefono VARCHAR(20);",
-		mostrar: "SELECT * FROM academico.alumnos",
+		mostrar: [V_ESTRUCTURA_ALUMNOS, V_ALUMNOS],
 		validar: async (db) => {
 			const cols = colNames(
 				await rows(
@@ -142,11 +172,11 @@ export const EJERCICIOS: Exercise[] = [
 		id: "ddl-04-alter-type",
 		titulo: "4 · Modificar el tipo de una columna",
 		enunciado:
-			"La columna **telefono** existe como texto(20). Cámbiala a **texto(30)**. (En PostgreSQL: `ALTER TABLE ... ALTER COLUMN ... TYPE ...`; el sandbox también acepta la forma Oracle/MySQL `MODIFY`.)",
+			"La columna **telefono** existe como texto(20). Cámbiala a **texto(30)**. (En PostgreSQL: `ALTER TABLE ... ALTER COLUMN ... TYPE ...`.)",
 		setupSQL: `${T_ALUMNOS}\nALTER TABLE academico.alumnos ADD telefono VARCHAR(20);`,
 		starter: "ALTER TABLE academico.alumnos\n  ALTER COLUMN telefono TYPE VARCHAR(30);",
 		solucion: "ALTER TABLE academico.alumnos ALTER COLUMN telefono TYPE VARCHAR(30);",
-		mostrar: "SELECT * FROM academico.alumnos",
+		mostrar: [V_ESTRUCTURA_ALUMNOS],
 		validar: async (db) => {
 			const r = await rows(
 				db,
@@ -166,7 +196,7 @@ export const EJERCICIOS: Exercise[] = [
 		setupSQL: T_ALUMNOS,
 		starter: "ALTER TABLE academico.alumnos\n  ADD CONSTRAINT uq_alumnos_correo UNIQUE (correo);",
 		solucion: "ALTER TABLE academico.alumnos ADD CONSTRAINT uq_alumnos_correo UNIQUE (correo);",
-		mostrar: "SELECT * FROM academico.alumnos",
+		mostrar: [V_RESTRICCIONES_ALUMNOS],
 		validar: async (db) => {
 			const r = await rows(
 				db,
@@ -185,7 +215,12 @@ export const EJERCICIOS: Exercise[] = [
 		setupSQL: T_ALUMNOS,
 		starter: "ALTER TABLE academico.alumnos\n  ADD CONSTRAINT chk_alumnos_edad CHECK (edad >= 0);",
 		solucion: "ALTER TABLE academico.alumnos ADD CONSTRAINT chk_alumnos_edad CHECK (edad >= 0);",
-		mostrar: "SELECT * FROM academico.alumnos",
+		mostrar: [
+			{
+				label: "Restricciones CHECK de academico.alumnos",
+				sql: "SELECT cc.constraint_name AS restriccion, cc.check_clause AS condicion FROM information_schema.check_constraints cc JOIN information_schema.constraint_column_usage ccu ON cc.constraint_name=ccu.constraint_name AND cc.constraint_schema=ccu.constraint_schema WHERE ccu.table_schema='academico' AND ccu.table_name='alumnos' AND cc.check_clause NOT LIKE '%IS NOT NULL%'",
+			},
+		],
 		validar: async (db) => {
 			const r = await rows(
 				db,
@@ -208,8 +243,12 @@ export const EJERCICIOS: Exercise[] = [
 		setupSQL: T_ALUMNOS,
 		starter: "CREATE INDEX idx_alumnos_apellido\n  ON academico.alumnos(apellido);",
 		solucion: "CREATE INDEX idx_alumnos_apellido ON academico.alumnos(apellido);",
-		mostrar:
-			"SELECT indexname, indexdef FROM pg_indexes WHERE schemaname='academico' AND tablename='alumnos'",
+		mostrar: [
+			{
+				label: "Índices de academico.alumnos",
+				sql: "SELECT indexname AS indice, indexdef AS definicion FROM pg_indexes WHERE schemaname='academico' AND tablename='alumnos'",
+			},
+		],
 		validar: async (db) => {
 			const r = await rows(
 				db,
@@ -234,7 +273,9 @@ SELECT a.id_alumno, a.nombre, a.apellido, c.nombre AS curso, m.fecha_matricula
 FROM academico.alumnos a
 JOIN academico.matriculas m ON a.id_alumno = m.id_alumno
 JOIN academico.cursos c ON m.id_curso = c.id_curso;`,
-		mostrar: "SELECT * FROM academico.vw_alumnos_matriculados",
+		mostrar: [
+			{ label: "academico.vw_alumnos_matriculados", sql: "SELECT * FROM academico.vw_alumnos_matriculados" },
+		],
 		validar: async (db) => {
 			const cols = colNames(
 				await rows(
@@ -257,8 +298,7 @@ JOIN academico.cursos c ON m.id_curso = c.id_curso;`,
 		setupSQL: T_CURSOS,
 		starter: "ALTER TABLE academico.cursos\n  RENAME TO asignaturas;",
 		solucion: "ALTER TABLE academico.cursos RENAME TO asignaturas;",
-		mostrar:
-			"SELECT table_name FROM information_schema.tables WHERE table_schema='academico' ORDER BY table_name",
+		mostrar: [V_TABLAS],
 		validar: async (db) => {
 			const t = (
 				await rows(
@@ -279,8 +319,7 @@ JOIN academico.cursos c ON m.id_curso = c.id_curso;`,
 		setupSQL: `${T_ALUMNOS}\n${T_CURSOS}\n${T_MATRICULAS}`,
 		starter: "DROP TABLE academico.matriculas;",
 		solucion: "DROP TABLE academico.matriculas;",
-		mostrar:
-			"SELECT table_name FROM information_schema.tables WHERE table_schema='academico' ORDER BY table_name",
+		mostrar: [V_TABLAS],
 		validar: async (db) => {
 			const t = await rows(
 				db,

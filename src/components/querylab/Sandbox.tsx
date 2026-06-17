@@ -173,20 +173,21 @@ export default function Sandbox() {
 									{!result.aprobado && result.detalle && <span>{result.detalle}</span>}
 								</div>
 
-								{result.columns && result.columns.length > 0 && (
-									<div className="sbx-tabla-wrap">
-										<div className="sbx-tabla-cap">Resultado</div>
+								{result.tablas?.map((t, ti) => (
+									// biome-ignore lint/suspicious/noArrayIndexKey: vistas de solo lectura
+									<div className="sbx-tabla-wrap" key={ti}>
+										<div className="sbx-tabla-cap">{t.label}</div>
 										<table className="sbx-tabla">
 											<thead>
 												<tr>
-													{result.columns.map((c) => (
+													{t.columns.map((c) => (
 														<th key={c}>{c}</th>
 													))}
 												</tr>
 											</thead>
 											<tbody>
-												{result.rows && result.rows.length > 0 ? (
-													result.rows.map((row, i) => (
+												{t.rows.length > 0 ? (
+													t.rows.map((row, i) => (
 														// biome-ignore lint/suspicious/noArrayIndexKey: filas de solo lectura
 														<tr key={i}>
 															{row.map((v, j) => (
@@ -199,15 +200,15 @@ export default function Sandbox() {
 													))
 												) : (
 													<tr>
-														<td className="sbx-vacio" colSpan={result.columns.length}>
-															(tabla creada, sin filas)
+														<td className="sbx-vacio" colSpan={Math.max(1, t.columns.length)}>
+															(sin filas)
 														</td>
 													</tr>
 												)}
 											</tbody>
 										</table>
 									</div>
-								)}
+								))}
 							</>
 						)}
 					</div>
