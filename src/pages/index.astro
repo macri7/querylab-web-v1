@@ -2,6 +2,7 @@
 import { Icon } from "astro-icon/components";
 import { siteConfig } from "../config";
 import Layout from "../layouts/Layout.astro";
+import { makeUrl } from "../utils/url-utils";
 
 const metaDescription =
 	"Query Lab: plataforma educativa de la Universidad de Lima para aprender SQL paso a paso, con videos, lecturas y un sandbox para practicar SQL real. Unidad 1: DDL.";
@@ -25,7 +26,7 @@ const unidades = [
 		n: "Unidad 1",
 		t: "DDL — Definición de Datos",
 		d: "CREATE, ALTER y DROP: cómo se moldea la estructura de una base de datos con criterio de negocio.",
-		href: "/unidad-1/",
+		href: makeUrl("/unidad-1/"),
 		estado: "Disponible",
 		activo: true,
 	},
@@ -34,7 +35,7 @@ const unidades = [
 		n: "Unidad 2",
 		t: "DML — Manipulación de Datos",
 		d: "INSERT, UPDATE y DELETE: cómo se carga y mantiene la información del día a día, con el WHERE y las transacciones como red de seguridad.",
-		href: "/unidad-2/",
+		href: makeUrl("/unidad-2/"),
 		estado: "Disponible",
 		activo: true,
 	},
@@ -63,11 +64,11 @@ const unidades = [
 					negocio, no solo sintaxis.
 				</p>
 				<div class="ql-cta-row">
-					<a href="/unidad-1/" class="ql-btn ql-btn-primary">
+					<a href={makeUrl("/unidad-1/")} class="ql-btn ql-btn-primary">
 						Empezar la Unidad 1
 						<Icon name="material-symbols:arrow-forward-rounded" />
 					</a>
-					<a href="/archive/" class="ql-btn ql-btn-ghost">Ver los temas</a>
+					<a href={makeUrl("/archive/")} class="ql-btn ql-btn-ghost">Ver los temas</a>
 				</div>
 				<ul class="ql-chips">
 					{chips.map((c) => (
@@ -129,7 +130,7 @@ const unidades = [
 					PostgreSQL real y mira la tabla que generaste. Si está bien, te lo decimos
 					al instante. <strong>10 ejercicios</strong> con corrección automática.
 				</p>
-				<a href="/unidad-1/practica/" class="ql-btn ql-btn-primary">
+				<a href={makeUrl("/unidad-1/practica/")} class="ql-btn ql-btn-primary">
 					Probar el sandbox
 					<Icon name="material-symbols:terminal" />
 				</a>

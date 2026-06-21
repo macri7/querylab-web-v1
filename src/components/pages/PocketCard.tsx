@@ -1,5 +1,6 @@
 import { Icon } from "@iconify/react";
 import { StripeFooter } from "../ui/StripeFooter";
+import { makeUrl } from "../../utils/url-utils";
 import { siteConfig } from "../../config";
 
 interface PocketCardProps {
@@ -70,7 +71,7 @@ export const PocketCard = ({
 							<Icon icon="material-symbols:home-outline" className="w-4 h-4" />
 						</a>
 						<a
-							href="/subscribe/"
+							href={makeUrl("/subscribe/")}
 							className="h-8 flex items-center gap-1 px-2 border border-lt-ink text-lt-ink bg-lt-ink/5 hover:bg-lt-ink hover:text-lt-bg transition-all active:scale-95 text-[10px] font-mono font-bold"
 							title="Follow via RSS"
 						>

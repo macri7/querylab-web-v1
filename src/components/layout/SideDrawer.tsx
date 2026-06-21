@@ -8,6 +8,7 @@ import Button from "../ui/Button";
 import { RpStamp } from "../ui/RpStamp";
 import I18nKey from "../../i18n/i18nKey";
 import { i18n } from "../../i18n/translation";
+import { makeUrl } from "../../utils/url-utils";
 
 interface NavItem {
 	label: string;
@@ -15,11 +16,11 @@ interface NavItem {
 }
 
 const hrefLabelMap: Record<string, I18nKey> = {
-	"/": I18nKey.home,
-	"/archive/": I18nKey.archive,
-	"/seri/": I18nKey.series,
-	"/links/": I18nKey.links,
-	"/about/": I18nKey.about,
+	[makeUrl("/")]: I18nKey.home,
+	[makeUrl("/archive/")]: I18nKey.archive,
+	[makeUrl("/seri/")]: I18nKey.series,
+	[makeUrl("/links/")]: I18nKey.links,
+	[makeUrl("/about/")]: I18nKey.about,
 };
 
 interface SideDrawerProps {
@@ -126,7 +127,7 @@ export const SideDrawer = ({
 								Curso de SQL
 							</span>
 							<a
-								href="/subscribe/"
+								href={makeUrl("/subscribe/")}
 								className="mt-2 flex items-center gap-1.5 px-2 py-1 border border-white/10 text-lt-ghost hover:text-lt-accent hover:border-lt-accent/50 transition-all text-[9px] font-mono uppercase tracking-widest"
 								title="Seguir por RSS"
 							>

@@ -2,6 +2,7 @@
 import { type CollectionEntry, getCollection, render } from "astro:content";
 import Markdown from "../../components/post/Markdown.astro";
 import Button from "../../components/ui/Button";
+import { makeUrl } from "../../utils/url-utils";
 import MainGridLayout from "../../layouts/MainGridLayout.astro";
 export async function getStaticPaths() {
 	const specs = await getCollection("spec");
@@ -33,7 +34,7 @@ const { Content } = await render(spec);
                 </Markdown>
             </div>
             <div class="mt-12 pt-6 border-t border-dashed border-black/10 dark:border-white/10 flex justify-center">
-                <Button as="a" href="/about/" variant="unstyled" class="btn-regular rounded-full px-6 py-2 text-sm font-bold bg-primary/10 text-primary hover:bg-primary/20 transition-all">
+                <Button as="a" href={makeUrl("/about/")} variant="unstyled" class="btn-regular rounded-full px-6 py-2 text-sm font-bold bg-primary/10 text-primary hover:bg-primary/20 transition-all">
                     View Full About Page
                 </Button>
             </div>

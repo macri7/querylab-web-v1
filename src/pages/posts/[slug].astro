@@ -10,6 +10,7 @@ import I18nKey from "../../i18n/i18nKey";
 import { i18n } from "../../i18n/translation";
 import PostHog from "../../components/posthog.astro";
 import { profileConfig, siteConfig } from "../../config";
+import { makeUrl } from "../../utils/url-utils";
 import Layout from "../../layouts/Layout.astro";
 import { getRelatedPosts, getSortedPosts } from "../../utils/content-utils";
 import "../../styles/tokens.css";
@@ -31,17 +32,17 @@ const { Content } = await render(entry);
 const relatedNodes = await getRelatedPosts(entry, 3);
 const relatedPosts = relatedNodes.map((p) => ({
 	title: p.data.title,
-	href: `/posts/${p.slug}`,
+	href: makeUrl(`/posts/${p.slug}/`),
 }));
 
 const currentIndex = posts.findIndex((p) => p.slug === entry.slug);
 const nextPost = currentIndex > 0 ? posts[currentIndex - 1] : null;
 
 const navItems = [
-	{ label: "Home", href: "/" },
-	{ label: "Archive", href: "/archive" },
-	{ label: "Friends", href: "/links" },
-	{ label: "About", href: "/about" },
+	{ label: "Home", href: makeUrl("/") },
+	{ label: "Archive", href: makeUrl("/archive/") },
+	{ label: "Friends", href: makeUrl("/links/") },
+	{ label: "About", href: makeUrl("/about/") },
 ];
 
 const pageTitle = `${entry.data.title} - ${siteConfig.title}`;
@@ -108,7 +109,7 @@ const metaDescription = entry.data.description
 					</p>
 				</div>
 				<a
-					href="/subscribe/"
+					href={makeUrl("/subscribe/")}
 					class="shrink-0 px-5 py-2.5 border border-lt-ink font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-lt-ink hover:bg-lt-ink hover:text-lt-bg transition-colors duration-150"
 				>
 					Follow

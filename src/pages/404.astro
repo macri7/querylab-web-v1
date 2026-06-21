@@ -1,6 +1,7 @@
 ---
 import Button from "../components/ui/Button";
 import RhineLayout from "../layouts/RhineLayout.astro";
+import { makeUrl } from "../utils/url-utils";
 import I18nKey from "../i18n/i18nKey";
 import { i18n } from "../i18n/translation";
 ---
@@ -41,7 +42,7 @@ import { i18n } from "../i18n/translation";
             </div>
 
             <div class="flex pt-4">
-                <Button as="a" href="/" variant="unstyled" className="group flex-1 md:flex-none md:min-w-[320px] bg-[#D4621A] text-[#EDE6D6] text-[11px] font-bold uppercase tracking-[0.2em] py-5 text-center transition-all flex items-center justify-center gap-3 animate-breathing-glow">
+                <Button as="a" href={makeUrl("/")} variant="unstyled" className="group flex-1 md:flex-none md:min-w-[320px] bg-[#D4621A] text-[#EDE6D6] text-[11px] font-bold uppercase tracking-[0.2em] py-5 text-center transition-all flex items-center justify-center gap-3 animate-breathing-glow">
                     <span class="text-lg leading-none">←</span>
                     {i18n(I18nKey.returnHome)} // Return_to_Root
                 </Button>

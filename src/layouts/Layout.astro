@@ -175,8 +175,8 @@ jsonLd["@graph"].push({
 		<link rel="alternate" hreflang="x-default" href={canonicalURL} />
 		<link rel="webmention" href="" />
 		<link rel="pingback" href="" />
-		<link rel="alternate" type="application/rss+xml" title={`${siteConfig.title} - RSS`} href="/rss.xml" />
-		<link rel="alternate" type="application/atom+xml" title={`${siteConfig.title} - Atom`} href="/atom.xml" />
+		<link rel="alternate" type="application/rss+xml" title={`${siteConfig.title} - RSS`} href={makeUrl("/rss.xml")} />
+		<link rel="alternate" type="application/atom+xml" title={`${siteConfig.title} - Atom`} href={makeUrl("/atom.xml")} />
 		<meta property="og:type" content={ogType} />
 		<meta property="og:url" content={canonicalURL} />
 		<meta property="og:title" content={pageTitle} />
