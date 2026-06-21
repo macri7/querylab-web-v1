@@ -29,8 +29,8 @@ import { remarkReadingTime } from "./src/plugins/remark-reading-time.mjs";
 const isCI = true;
 
 export default defineConfig({
-    site: "https://querylab.vercel.app",
-    base: "/",
+    site: "https://macri7.github.io",
+    base: "/querylab-web-v1/",
     trailingSlash: "always",
     prefetch: true,
     fonts: [
