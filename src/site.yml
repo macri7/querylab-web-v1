@@ -1,30 +1,30 @@
 site:
   title: "Query Lab"
   subtitle: "Aprende SQL con criterio de negocio"
-  url: "https://querylab.vercel.app"
+  url: "https://macri7.github.io/querylab-web-v1"
   lang: "es"
   author: "Equipo Query Lab"
   email: "querylab@ulima.edu.pe"
-  favicon: "/images/favicon.webp"
+  favicon: "/querylab-web-v1/images/favicon.webp"
   banner: ""
-  og_image: "/og.webp"
+  og_image: "/querylab-web-v1/og.webp"
+
 
 profile:
-  avatar: "/images/favicon.webp"
+  avatar: "/querylab-web-v1/images/favicon.webp"
   name: "Query Lab"
   bio: "Plataforma educativa de SQL — Universidad de Lima"
   links:
     - name: "Unidad 1"
-      url: "/unidad-1/"
+      url: "/querylab-web-v1/unidad-1/"
     - name: "Temas"
-      url: "/archive/"
+      url: "/querylab-web-v1/archive/"
 
 nav:
-  - Inicio: "/"
-  - Unidad 1: "/unidad-1/"
-  - Temas: "/archive/"
-  - Acerca: "/about/"
-
+  - Inicio: "/querylab-web-v1/"
+  - Unidad 1: "/querylab-web-v1/unidad-1/"
+  - Temas: "/querylab-web-v1/archive/"
+  - Acerca: "/querylab-web-v1/about/"
 features:
   breadcrumb: true
   comments: false
