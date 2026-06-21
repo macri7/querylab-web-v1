@@ -43,22 +43,18 @@ export default defineConfig({
             name: "Noto Serif SC",
             provider: fontProviders.fontsource("noto-serif-sc"),
             cssVariable: "--font-serif",
-            options: {
-                weights: [400, 900],
-            }
+            options: { weights: [400, 900] },
         },
         {
             name: "Plus Jakarta Sans",
             provider: fontProviders.local(),
             cssVariable: "--font-sans-pj",
             options: {
-                variants: [
-                    {
-                        src: ["./public/fonts/PlusJakartaSans.woff2"],
-                        weight: "200 800",
-                        style: "normal",
-                    },
-                ],
+                variants: [{
+                    src: ["./public/fonts/PlusJakartaSans.woff2"],
+                    weight: "200 800",
+                    style: "normal",
+                }],
             },
         },
     ],
@@ -69,59 +65,56 @@ export default defineConfig({
             ? { entrypoint: "astro/assets/services/sharp" }
             : { entrypoint: "astro/assets/services/noop" },
     },
-    integrations: [react(), icon({}), expressiveCode({
-        themes: ["github-dark"],
-        useVariableFonts: true,
-        plugins: [
-            pluginCollapsibleSections(),
-            pluginLineNumbers(),
-            pluginLanguageBadge(),
-            pluginCustomCopyButton(),
-        ],
-        defaultProps: {
-            wrap: false,
-            showLineNumbers: true,
-            overridesByLang: {
-                shellsession: {
-                    showLineNumbers: false,
+    integrations: [
+        react(),
+        icon({}),
+        expressiveCode({
+            themes: ["github-dark"],
+            useVariableFonts: true,
+            plugins: [
+                pluginCollapsibleSections(),
+                pluginLineNumbers(),
+                pluginLanguageBadge(),
+                pluginCustomCopyButton(),
+            ],
+            defaultProps: {
+                wrap: false,
+                showLineNumbers: true,
+                overridesByLang: { shellsession: { showLineNumbers: false } },
+            },
+            styleOverrides: {
+                codeBackground: "#1A1814",
+                borderRadius: "0px",
+                borderColor: "rgba(255, 255, 255, 0.05)",
+                codeFontSize: "13px",
+                codeFontFamily: "'Fira Code', 'Fira Code Variable', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
+                codeLineHeight: "1.7",
+                uiLineHeight: "1.7",
+                frames: {
+                    editorBackground: "#1A1814",
+                    terminalBackground: "#1A1814",
+                    terminalTitlebarBackground: "none",
+                    editorTabBarBackground: "none",
+                    editorActiveTabBackground: "none",
+                    editorActiveTabIndicatorBottomColor: "#D4621A",
+                    editorActiveTabIndicatorTopColor: "none",
+                    editorTabBarBorderBottomColor: "transparent",
+                    terminalTitlebarBorderBottomColor: "transparent",
+                    showCopyToClipboardButton: false,
+                    inlineButtonForeground: "transparent",
                 },
             },
-        },
-        styleOverrides: {
-            codeBackground: "#1A1814",
-            borderRadius: "0px",
-            borderColor: "rgba(255, 255, 255, 0.05)",
-            codeFontSize: "13px",
-            codeFontFamily:
-                "'Fira Code', 'Fira Code Variable', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
-            codeLineHeight: "1.7",
-            uiLineHeight: "1.7",
-            frames: {
-                editorBackground: "#1A1814",
-                terminalBackground: "#1A1814",
-                terminalTitlebarBackground: "none",
-                editorTabBarBackground: "none",
-                editorActiveTabBackground: "none",
-                editorActiveTabIndicatorBottomColor: "#D4621A",
-                editorActiveTabIndicatorTopColor: "none",
-                editorTabBarBorderBottomColor: "transparent",
-                terminalTitlebarBorderBottomColor: "transparent",
-                showCopyToClipboardButton: false,
-                inlineButtonForeground: "transparent",
-            },
-        },
-        frames: {
-            showCopyToClipboardButton: false,
-        },
-        }), 
+            frames: { showCopyToClipboardButton: false },
+        }),
         compress({
-        CSS: isCI,
-        HTML: isCI,
-        Image: false,
-        JavaScript: isCI,
-        SVG: isCI,
-        Logger: 1,
-        })],
+            CSS: isCI,
+            HTML: isCI,
+            Image: false,
+            JavaScript: isCI,
+            SVG: isCI,
+            Logger: 1,
+        }),
+    ],
     markdown: {
         remarkPlugins: [
             remarkMermaid,
@@ -138,58 +131,36 @@ export default defineConfig({
             rehypeSlug,
             rehypeOptimizeImages,
             rehypeExternalLinks,
-            [
-                rehypeComponents,
-                {
-                    components: {
-                        github: GithubCardComponent,
-                        note: (x, y) => AdmonitionComponent(x, y, "note"),
-                        tip: (x, y) => AdmonitionComponent(x, y, "tip"),
-                        important: (x, y) => AdmonitionComponent(x, y, "important"),
-                        caution: (x, y) => AdmonitionComponent(x, y, "caution"),
-                        warning: (x, y) => AdmonitionComponent(x, y, "warning"),
-                        red: (x, y) => AdmonitionComponent(x, y, "caution"),
-                        blue: (x, y) => AdmonitionComponent(x, y, "note"),
-                        green: (x, y) => AdmonitionComponent(x, y, "tip"),
-                        yellow: (x, y) => AdmonitionComponent(x, y, "warning"),
-                        cyan: (x, y) => AdmonitionComponent(x, y, "important"),
-                    },
+            [rehypeComponents, {
+                components: {
+                    github: GithubCardComponent,
+                    note: (x, y) => AdmonitionComponent(x, y, "note"),
+                    tip: (x, y) => AdmonitionComponent(x, y, "tip"),
+                    important: (x, y) => AdmonitionComponent(x, y, "important"),
+                    caution: (x, y) => AdmonitionComponent(x, y, "caution"),
+                    warning: (x, y) => AdmonitionComponent(x, y, "warning"),
+                    red: (x, y) => AdmonitionComponent(x, y, "caution"),
+                    blue: (x, y) => AdmonitionComponent(x, y, "note"),
+                    green: (x, y) => AdmonitionComponent(x, y, "tip"),
+                    yellow: (x, y) => AdmonitionComponent(x, y, "warning"),
+                    cyan: (x, y) => AdmonitionComponent(x, y, "important"),
                 },
-            ],
-            [
-                rehypeAutolinkHeadings,
-                {
-                    behavior: "append",
-                    properties: {
-                        className: ["anchor"],
-                    },
-                    content: {
-                        type: "element",
-                        tagName: "span",
-                        properties: {
-                            className: ["anchor-icon"],
-                            "data-pagefind-ignore": true,
-                        },
-                        children: [
-                            {
-                                type: "text",
-                                value: "#",
-                            },
-                        ],
-                    },
+            }],
+            [rehypeAutolinkHeadings, {
+                behavior: "append",
+                properties: { className: ["anchor"] },
+                content: {
+                    type: "element",
+                    tagName: "span",
+                    properties: { className: ["anchor-icon"], "data-pagefind-ignore": true },
+                    children: [{ type: "text", value: "#" }],
                 },
-            ],
+            }],
         ],
     },
     vite: {
-        plugins: [
-            yaml(),
-        ],
-        // PGlite trae su WASM + FS bundle vía new URL(...): el pre-bundling de Vite
-        // rompe esas URLs ("Invalid FS bundle size"). Hay que excluirlo del optimizer.
-        optimizeDeps: {
-            exclude: ["@electric-sql/pglite"],
-        },
+        plugins: [yaml()],
+        optimizeDeps: { exclude: ["@electric-sql/pglite"] },
         worker: { format: "es" },
         build: {
             cssCodeSplit: true,
@@ -197,19 +168,14 @@ export default defineConfig({
             minify: isCI ? "esbuild" : false,
             rollupOptions: {
                 onwarn(warning, warn) {
-
                     if (
                         warning.message.includes("is dynamically imported by") &&
                         warning.message.includes("but also statically imported by")
-                    ) {
-                        return;
-                    }
+                    ) return;
                     warn(warning);
                 },
             },
         },
-        esbuild: {
-            drop: isCI ? ['console', 'debugger'] : [],
-        },
+        esbuild: { drop: isCI ? ["console", "debugger"] : [] },
     },
 });
