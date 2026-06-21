@@ -11,20 +11,20 @@ site:
 
 
 profile:
-  avatar: "/querylab-web-v1/images/favicon.webp"
+  avatar: "/images/favicon.webp"
   name: "Query Lab"
   bio: "Plataforma educativa de SQL — Universidad de Lima"
   links:
     - name: "Unidad 1"
-      url: "/querylab-web-v1/unidad-1/"
+      url: "/unidad-1/"
     - name: "Temas"
-      url: "/querylab-web-v1/archive/"
+      url: "/archive/"
 
 nav:
-  - Inicio: "/querylab-web-v1/"
-  - Unidad 1: "/querylab-web-v1/unidad-1/"
-  - Temas: "/querylab-web-v1/archive/"
-  - Acerca: "/querylab-web-v1/about/"
+  - Inicio: "/"
+  - Unidad 1: "/unidad-1/"
+  - Temas: "/archive/"
+  - Acerca: "/about/"
 features:
   breadcrumb: true
   comments: false

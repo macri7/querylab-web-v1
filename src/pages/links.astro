@@ -7,15 +7,16 @@ import Comments from "../components/post/Comments.astro";
 import I18nKey from "../i18n/i18nKey";
 import { i18n } from "../i18n/translation";
 import { siteConfig } from "../config";
+import { makeUrl } from "../utils/url-utils";
 import links from "../data/links.yml";
 import Layout from "../layouts/Layout.astro";
 import "../styles/cepato.css";
 
 const navItems = [
-	{ label: "Home", href: "/" },
-	{ label: "Archive", href: "/archive" },
-	{ label: "Friends", href: "/links" },
-	{ label: "About", href: "/about" },
+	{ label: "Home", href: makeUrl("/") },
+	{ label: "Archive", href: makeUrl("/archive/") },
+	{ label: "Friends", href: makeUrl("/links/") },
+	{ label: "About", href: makeUrl("/about/") },
 ];
 
 const getAvatar = (avatar: string) => {

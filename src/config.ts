@@ -8,6 +8,7 @@ import type {
 	SiteConfig,
 } from "./types/config";
 import { LinkPreset } from "./types/config";
+import { makeUrl } from "./utils/url-utils";
 import yaml from "./site.yml";
 
 const cfg = yaml as {
@@ -77,18 +78,33 @@ export const siteConfig: SiteConfig = {
 	favicon: [{ src: cfg.site.favicon, sizes: "32x32" }],
 };
 
+function normalizeSiteUrl(url: string): string {
+	if (!url) return url;
+	if (/^https?:\/\//.test(url) || /^\/\//.test(url)) {
+		return url;
+	}
+	if (url.startsWith("/")) {
+		return makeUrl(url);
+	}
+	return url;
+}
+
 export const navBarConfig: NavBarConfig = {
 	links: cfg.nav.map((item) => {
 		const [name, url] = Object.entries(item)[0];
-		return { name, url };
+		return { name, url: normalizeSiteUrl(url) };
 	}),
 };
 
 export const profileConfig: ProfileConfig = {
-	avatar: cfg.profile.avatar,
+	avatar: normalizeSiteUrl(cfg.profile.avatar),
 	name: cfg.profile.name,
 	bio: cfg.profile.bio,
-	links: cfg.profile.links,
+	links: cfg.profile.links.map((link) => ({
+		name: link.name,
+		icon: link.icon,
+		url: normalizeSiteUrl(link.url),
+	})),
 };
 
 export const licenseConfig: LicenseConfig = {

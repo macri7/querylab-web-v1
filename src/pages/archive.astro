@@ -12,10 +12,10 @@ import "../styles/cepato.css";
 const sortedPosts = await getSortedPosts();
 
 const navItems = [
-	{ label: "Home", href: "/" },
-	{ label: "Archive", href: "/archive" },
-	{ label: "Friends", href: "/links" },
-	{ label: "About", href: "/about" },
+	{ label: "Home", href: makeUrl("/") },
+	{ label: "Archive", href: makeUrl("/archive/") },
+	{ label: "Friends", href: makeUrl("/links/") },
+	{ label: "About", href: makeUrl("/about/") },
 ];
 
 const archiveLabel = i18n(I18nKey.archive);
