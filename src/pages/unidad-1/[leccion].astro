@@ -1,5 +1,6 @@
 ---
 import { getEntry, render } from "astro:content";
+import { makeUrl } from "../../utils/url-utils";
 import MermaidLoader from "@components/MermaidLoader.astro";
 import QuizForm from "@components/querylab/QuizForm";
 import Sandbox from "@components/querylab/Sandbox";
@@ -18,7 +19,7 @@ export function getStaticPaths() {
 const { slug } = Astro.props;
 const unidad = UNIDAD_1;
 const leccion = getLeccion(unidad, slug);
-if (!leccion) return Astro.redirect("/unidad-1/evaluacion-inicial/");
+if (!leccion) return Astro.redirect(makeUrl("/unidad-1/evaluacion-inicial/"));
 const { prev, next, index, total } = navLeccion(unidad, slug);
 
 let Content: Awaited<ReturnType<typeof render>>["Content"] | null = null;
@@ -72,12 +73,12 @@ const title = `${leccion.titulo} · Unidad ${unidad.numero}`;
 
 		<nav class="lec-nav">
 			{prev ? (
-				<a class="lec-nav-btn" href={`${unidad.basePath}/${prev.slug}/`}>← {prev.titulo}</a>
+				<a class="lec-nav-btn" href={makeUrl(`${unidad.basePath}/${prev.slug}/`)}>← {prev.titulo}</a>
 			) : (
 				<span></span>
 			)}
 			{next ? (
-				<a class="lec-nav-btn lec-nav-next" href={`${unidad.basePath}/${next.slug}/`}>
+				<a class="lec-nav-btn lec-nav-next" href={makeUrl(`${unidad.basePath}/${next.slug}/`)}>
 					{next.titulo} →
 				</a>
 			) : (
