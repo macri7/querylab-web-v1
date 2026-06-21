@@ -228,6 +228,14 @@ jsonLd["@graph"].push({
                     document.documentElement.classList.remove('dark');
                 }
             };
+            // Re-aplica el colapso del sidebar tras cada navegación (ClientRouter
+            // reemplaza el <html> y pierde la clase aunque el store/localStorage la
+            // conserve). Mantiene la fuente de verdad en localStorage.
+            const syncSidebar = () => {
+                const collapsed = localStorage.getItem('sidebar-collapsed') === 'true';
+                document.documentElement.classList.toggle('sidebar-collapsed', collapsed);
+                $isSidebarCollapsed.set(collapsed);
+            };
             const updateScrollProgress = () => {
                 const winScroll = window.scrollY;
                 const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
@@ -246,6 +254,7 @@ jsonLd["@graph"].push({
             });
             document.addEventListener('astro:after-swap', () => {
                 syncTheme();
+                syncSidebar();
                 updateScrollProgress();
                 const isHome = window.location.pathname === '/' || /^\/page\/\d+/.test(window.location.pathname);
                 if (isHome) document.body.classList.add('is-home');
@@ -270,6 +279,7 @@ jsonLd["@graph"].push({
                 }
             });
             syncTheme();
+            syncSidebar();
             if (document.readyState === 'complete') {
                 PageLifecycle.init();
             }
