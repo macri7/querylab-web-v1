@@ -78,7 +78,57 @@ export const UNIDAD_1: Unidad = {
 	],
 };
 
-export const UNIDADES: Unidad[] = [UNIDAD_1];
+export const UNIDAD_2: Unidad = {
+	id: "unidad-2",
+	numero: 2,
+	titulo: "DML · Manipulación de Datos",
+	descripcion:
+		"INSERT, UPDATE y DELETE: cómo se carga y mantiene la información del día a día, con el WHERE y las transacciones como red de seguridad.",
+	basePath: "/unidad-2",
+	lecciones: [
+		{
+			slug: "evaluacion-inicial-dml",
+			titulo: "Evaluación inicial",
+			subtitulo: "Mide tu punto de partida en DML",
+			tipo: "form-pre",
+			icon: "quiz",
+		},
+		{
+			slug: "dml-en-concepto",
+			titulo: "DML en concepto",
+			subtitulo: "INSERT, UPDATE, DELETE y transacciones",
+			tipo: "leccion",
+			icon: "play-circle",
+			post: "dml/tema-1-fundamentos-dml",
+			duracion: "8 min",
+		},
+		{
+			slug: "dml-en-la-practica",
+			titulo: "DML en la práctica",
+			subtitulo: "Operar la taquilla de la cadena de cines",
+			tipo: "leccion",
+			icon: "play-circle",
+			post: "dml/tema-2-dml-en-la-practica",
+			duracion: "8 min",
+		},
+		{
+			slug: "practica-dml",
+			titulo: "Practica con el sandbox",
+			subtitulo: "8 ejercicios DML ejecutables",
+			tipo: "ejercicios",
+			icon: "terminal",
+		},
+		{
+			slug: "evaluacion-final-dml",
+			titulo: "Evaluación final",
+			subtitulo: "Mide lo aprendido y finaliza",
+			tipo: "form-post",
+			icon: "task-alt",
+		},
+	],
+};
+
+export const UNIDADES: Unidad[] = [UNIDAD_1, UNIDAD_2];
 
 export function getLeccion(unidad: Unidad, slug: string): Leccion | undefined {
 	return unidad.lecciones.find((l) => l.slug === slug);

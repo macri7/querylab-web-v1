@@ -1,0 +1,182 @@
+---
+import { getEntry, render } from "astro:content";
+import MermaidLoader from "@components/MermaidLoader.astro";
+import QuizForm from "@components/querylab/QuizForm";
+import Sandbox from "@components/querylab/Sandbox";
+import "@components/querylab/querylab.css";
+import { POST_QUESTIONS_DML, PRE_QUESTIONS_DML } from "@components/querylab/surveyData";
+import { UNIDAD_2, getLeccion, navLeccion } from "../../data/curso";
+import CourseLayout from "../../layouts/CourseLayout.astro";
+
+export function getStaticPaths() {
+	return UNIDAD_2.lecciones.map((l) => ({
+		params: { leccion: l.slug },
+		props: { slug: l.slug },
+	}));
+}
+
+const { slug } = Astro.props;
+const unidad = UNIDAD_2;
+const leccion = getLeccion(unidad, slug);
+if (!leccion) return Astro.redirect("/unidad-2/evaluacion-inicial-dml/");
+const { prev, next, index, total } = navLeccion(unidad, slug);
+
+let Content: Awaited<ReturnType<typeof render>>["Content"] | null = null;
+if (leccion.tipo === "leccion" && leccion.post) {
+	const entry = await getEntry("posts", leccion.post);
+	if (entry) Content = (await render(entry)).Content;
+}
+
+const title = `${leccion.titulo} · Unidad ${unidad.numero}`;
+---
+
+<CourseLayout unidad={unidad} activeSlug={slug} title={title} description={leccion.subtitulo}>
+	<article class="lec">
+		<header class="lec-head">
+			<span class="lec-step">Lección {index + 1} de {total} · Unidad {unidad.numero}</span>
+			<h1 class="lec-title">{leccion.titulo}</h1>
+			{leccion.subtitulo && <p class="lec-sub">{leccion.subtitulo}</p>}
+		</header>
+
+		{leccion.tipo === "leccion" && (
+			<>
+				{leccion.yt && (
+					<div class="lec-video">
+						<iframe
+							src={`https://www.youtube-nocookie.com/embed/${leccion.yt}`}
+							title={leccion.titulo}
+							loading="lazy"
+							allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+							allowfullscreen
+						></iframe>
+					</div>
+				)}
+				{Content && (
+					<div class="prose custom-md max-w-none lec-prose">
+						<Content />
+					</div>
+				)}
+				<button type="button" class="lec-complete" data-slug={slug}>
+					Marcar como completada
+				</button>
+			</>
+		)}
+
+		{leccion.tipo === "form-pre" && (
+			<QuizForm client:load tipo="pre" questions={PRE_QUESTIONS_DML} lessonSlug={slug} unidad={2} />
+		)}
+		{leccion.tipo === "form-post" && (
+			<QuizForm client:load tipo="post" questions={POST_QUESTIONS_DML} lessonSlug={slug} unidad={2} />
+		)}
+		{leccion.tipo === "ejercicios" && (
+			<Sandbox client:only="react" set="dml" practicaSlug={slug} />
+		)}
+
+		<nav class="lec-nav">
+			{prev ? (
+				<a class="lec-nav-btn" href={`${unidad.basePath}/${prev.slug}/`}>← {prev.titulo}</a>
+			) : (
+				<span></span>
+			)}
+			{next ? (
+				<a class="lec-nav-btn lec-nav-next" href={`${unidad.basePath}/${next.slug}/`}>
+					{next.titulo} →
+				</a>
+			) : (
+				<span></span>
+			)}
+		</nav>
+	</article>
+
+	<MermaidLoader />
+</CourseLayout>
+
+<style>
+	.lec {
+		display: flex;
+		flex-direction: column;
+		gap: 1.5rem;
+	}
+	.lec-head { display: flex; flex-direction: column; gap: 0.4rem; }
+	.lec-step {
+		font-size: 0.75rem;
+		font-weight: 800;
+		text-transform: uppercase;
+		letter-spacing: 0.1em;
+		color: var(--primary);
+	}
+	.lec-title {
+		margin: 0;
+		font-size: clamp(1.6rem, 3vw, 2.25rem);
+		font-weight: 800;
+		line-height: 1.15;
+		color: var(--deep-text);
+	}
+	.lec-sub { margin: 0; color: var(--lt-muted, #6b6456); font-size: 1.05rem; }
+
+	.lec-video {
+		position: relative;
+		width: 100%;
+		aspect-ratio: 16 / 9;
+		background: #000;
+		border: 1px solid rgba(var(--ce-border) / 0.6);
+	}
+	.lec-video iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+
+	.lec-prose { width: 100%; }
+
+	.lec-complete {
+		align-self: flex-start;
+		font-family: inherit;
+		font-weight: 700;
+		font-size: 0.92rem;
+		padding: 0.7rem 1.4rem;
+		background: var(--primary);
+		color: #fff;
+		border: 0;
+		cursor: pointer;
+		transition: opacity 0.15s;
+	}
+	.lec-complete:hover { opacity: 0.9; }
+	.lec-complete.is-done { background: rgba(var(--ce-ink) / 0.15); color: var(--deep-text); cursor: default; }
+
+	.lec-nav {
+		display: flex;
+		justify-content: space-between;
+		gap: 0.75rem;
+		padding-top: 1.25rem;
+		border-top: 1px solid rgba(var(--ce-border) / 0.6);
+	}
+	.lec-nav-btn {
+		max-width: 48%;
+		padding: 0.65rem 1rem;
+		border: 1px solid rgba(var(--ce-border) / 0.9);
+		text-decoration: none;
+		color: var(--deep-text);
+		font-weight: 600;
+		font-size: 0.9rem;
+		transition: border-color 0.15s, color 0.15s;
+	}
+	.lec-nav-btn:hover { border-color: var(--primary); color: var(--primary); }
+	.lec-nav-next { margin-left: auto; text-align: right; }
+</style>
+
+<script>
+	import { leerProgreso, marcarLeccion } from "../../scripts/progreso";
+	function initComplete() {
+		const btn = document.querySelector(".lec-complete") as HTMLButtonElement | null;
+		if (!btn || btn.dataset.init) return;
+		btn.dataset.init = "1";
+		const slug = btn.dataset.slug || "";
+		const setDone = () => {
+			btn.classList.add("is-done");
+			btn.textContent = "✓ Completada";
+		};
+		if (leerProgreso().completed.includes(slug)) setDone();
+		btn.addEventListener("click", () => {
+			marcarLeccion(slug);
+			setDone();
+		});
+	}
+	document.addEventListener("astro:page-load", initComplete);
+</script>

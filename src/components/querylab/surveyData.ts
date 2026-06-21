@@ -128,3 +128,108 @@ export const POST_QUESTIONS: Question[] = [
 		],
 	},
 ];
+
+// ─────────────────────── Unidad 2 · DML ───────────────────────
+// Reconstruido del documento "Preguntas Sprint 2" (PRE / POST) del curso.
+
+export const PRE_QUESTIONS_DML: Question[] = [
+	{
+		id: "q1",
+		prompt:
+			"Observa estas acciones sobre una base de datos de cine: I. Crear la tabla funciones. II. Registrar una nueva venta. III. Cambiar el precio de una función existente. IV. Eliminar una columna de la tabla ventas. ¿Cuáles modifican datos almacenados y no la estructura?",
+		options: ["I y IV", "II y III", "I y II", "III y IV"],
+	},
+	{
+		id: "q2",
+		prompt:
+			"¿Cuál sería el efecto más probable de este comando si la tabla funciones tiene varias filas?",
+		code: "UPDATE funciones\nSET precio = 30;",
+		options: [
+			"Solo se modifica la función más reciente.",
+			"Se modifica el precio de todas las funciones.",
+			"Oracle ejecuta el comando solo si existe una clave primaria.",
+			"Se crea una nueva columna llamada precio.",
+		],
+	},
+	{
+		id: "q3",
+		prompt: "¿Cuál es el propósito principal del comando UPDATE?",
+		options: [
+			"Crear una nueva tabla",
+			"Eliminar una tabla existente",
+			"Modificar datos ya almacenados",
+			"Consultar información",
+		],
+	},
+	{
+		id: "q4",
+		prompt: "¿Cuál de las siguientes opciones diferencia correctamente DELETE y DROP?",
+		options: [
+			"DELETE elimina registros de una tabla; DROP elimina la tabla completa.",
+			"DELETE elimina la estructura; DROP elimina solo los datos.",
+			"Ambos eliminan únicamente registros, pero DROP necesita WHERE.",
+			"Ambos pertenecen a DML porque eliminan información.",
+		],
+	},
+	{
+		id: "q5",
+		prompt:
+			"Una empresa ejecuta una modificación de precios y revisa que el resultado fue incorrecto antes de hacerlo permanente. ¿Qué acción debería permitirle deshacer el cambio?",
+		options: ["COMMIT", "ROLLBACK", "INSERT", "DROP"],
+	},
+];
+
+export const POST_QUESTIONS_DML: Question[] = [
+	{
+		id: "q1",
+		prompt: "¿Qué hace este comando?",
+		code: "UPDATE funciones\nSET precio = 30\nWHERE pelicula = 'Duna 2';",
+		options: [
+			"Crea una nueva tabla llamada funciones.",
+			"Inserta una nueva función de cine.",
+			"Cambia el precio solo de las filas que cumplen la condición indicada.",
+			"Elimina todas las funciones con precio 30.",
+		],
+	},
+	{
+		id: "q2",
+		prompt: "¿Cuál es el principal riesgo de ejecutar un UPDATE sin WHERE?",
+		options: [
+			"Que Oracle no permita ejecutar el comando.",
+			"Que se cree una nueva columna automáticamente.",
+			"Que se modifiquen todas las filas de la tabla.",
+			"Que se elimine la tabla completa.",
+		],
+	},
+	{
+		id: "q3",
+		prompt: "¿Qué diferencia se establece entre DELETE y DROP?",
+		options: [
+			"DELETE elimina registros dentro de una tabla; DROP elimina la tabla completa con su estructura.",
+			"DELETE elimina columnas; DROP elimina solo registros.",
+			"DELETE crea tablas; DROP inserta registros.",
+			"No existe diferencia, ambos hacen exactamente lo mismo.",
+		],
+	},
+	{
+		id: "q4",
+		prompt: "¿Para qué sirve ROLLBACK en una transacción?",
+		options: [
+			"Para confirmar definitivamente los cambios realizados.",
+			"Para crear una nueva tabla después de un error.",
+			"Para deshacer cambios antes de hacerlos permanentes.",
+			"Para consultar los datos de una tabla.",
+		],
+	},
+	{
+		id: "q5",
+		prompt:
+			"En una empresa real, ¿por qué conviene trabajar con transacciones al modificar o eliminar datos?",
+		options: [
+			"Porque las transacciones reemplazan la necesidad de escribir SQL.",
+			"Porque permiten ejecutar cambios, verificarlos y deshacerlos si algo salió mal.",
+			"Porque convierten comandos DML en comandos DDL.",
+			"Porque evitan que se puedan insertar datos nuevos.",
+		],
+	},
+];

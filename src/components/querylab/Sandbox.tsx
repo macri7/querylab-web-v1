@@ -1,13 +1,25 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { enviarEjercicio } from "./lib/submit";
 import "./sandbox/sandbox.css";
 import { type EvalResult, evaluar } from "./sandbox/engine";
 import { EJERCICIOS } from "./sandbox/exercises";
+import { EJERCICIOS_DML } from "./sandbox/exercises-dml";
 import {
 	leerProgreso,
 	marcarEjercicio,
 	marcarLeccion,
 } from "../../scripts/progreso";
+
+const SETS = {
+	ddl: EJERCICIOS,
+	dml: EJERCICIOS_DML,
+} as const;
+
+export interface SandboxProps {
+	/** Qué colección de ejercicios cargar. */
+	set?: keyof typeof SETS;
+	/** Slug de la lección de práctica a marcar como completada al terminar. */
+	practicaSlug?: string;
+}
 
 // Formatea **negrita** y `código` del enunciado (texto de confianza, escapado).
 function fmt(s: string): string {
@@ -26,7 +38,8 @@ function celda(v: unknown): string {
 	return String(v);
 }
 
-export default function Sandbox() {
+export default function Sandbox({ set = "ddl", practicaSlug = "practica" }: SandboxProps = {}) {
+	const EJERCICIOS = SETS[set] ?? SETS.ddl;
 	const [idx, setIdx] = useState(0);
 	const [code, setCode] = useState(EJERCICIOS[0].starter);
 	const [result, setResult] = useState<EvalResult | null>(null);
@@ -65,14 +78,12 @@ export default function Sandbox() {
 		setCorriendo(false);
 
 		if (r.aprobado && !aprobados[ex.id]) {
+			// Se guarda localmente; las métricas se consolidan en la evaluación final.
 			marcarEjercicio(ex.id, true);
 			const next = { ...aprobados, [ex.id]: true };
 			setAprobados(next);
-			// Registrar en el backend (no bloqueante).
-			const correo = leerProgreso().correo;
-			enviarEjercicio(correo, ex.id, true);
-			// Si ya están los 10, marcar la lección de práctica como completada.
-			if (EJERCICIOS.every((e) => next[e.id])) marcarLeccion("practica");
+			// Si ya están todos, marcar la lección de práctica como completada.
+			if (EJERCICIOS.every((e) => next[e.id])) marcarLeccion(practicaSlug);
 		}
 	}
 
