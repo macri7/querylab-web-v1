@@ -26,7 +26,7 @@ const { unidad, activeSlug, title, description } = Astro.props;
 				<nav class="cs-list" aria-label="Lecciones de la unidad">
 					{unidad.lecciones.map((l, i) => (
 						<a
-							href={`${unidad.basePath}/${l.slug}/`}
+							href={makeUrl(`${unidad.basePath}/${l.slug}/`)}
 							class:list={["cs-item", { "is-active": l.slug === activeSlug }]}
 							data-slug={l.slug}
 						>
