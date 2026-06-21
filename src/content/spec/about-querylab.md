@@ -23,4 +23,4 @@ El curso se divide en unidades. Cada unidad sigue la misma estructura de clase:
 
 ### Unidad 1 disponible
 
-La primera unidad cubre **DDL** (Lenguaje de Definición de Datos): `CREATE`, `ALTER` y `DROP`. Identifícate con tu correo institucional **@ulima.edu.pe** para que tu avance quede registrado.
+La primera unidad cubre **DDL** (Lenguaje de Definición de Datos): `CREATE`, `ALTER` y `DROP`. Al terminar cada unidad te identificas con tu correo institucional **@aloe.ulima.edu.pe** para que tus resultados queden registrados.

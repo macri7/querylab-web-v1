@@ -1,9 +1,16 @@
 import { useEffect, useState } from "react";
-import { leerProgreso, marcarLeccion, setCorreo as guardarCorreo } from "../../scripts/progreso";
 import {
+	guardarPre,
+	leerPre,
+	leerProgreso,
+	marcarLeccion,
+	setCorreo as guardarCorreo,
+	setNombre as guardarNombre,
+} from "../../scripts/progreso";
+import {
+	type FinalPayload,
 	normalizeEmail,
-	type SurveyPayload,
-	submitForm,
+	submitFinal,
 	validateUlimaEmail,
 } from "./lib/submit";
 import type { Question } from "./surveyData";
@@ -12,11 +19,16 @@ interface Props {
 	tipo: "pre" | "post";
 	questions: Question[];
 	lessonSlug: string;
+	/** Número de unidad — etiqueta los datos y agrupa las métricas correctas. */
+	unidad: number;
 }
 
 type Estado = "idle" | "sending" | "error" | "done";
 
-export default function QuizForm({ tipo, questions, lessonSlug }: Props) {
+// Prefijo de los ejercicios del sandbox por unidad (para consolidar solo los de esta unidad).
+const PREFIJO_EJERCICIOS: Record<number, string> = { 1: "ddl-", 2: "dml-" };
+
+export default function QuizForm({ tipo, questions, lessonSlug, unidad }: Props) {
 	const [nombre, setNombre] = useState("");
 	const [correo, setCorreo] = useState("");
 	const [answers, setAnswers] = useState<Record<string, number>>({});
@@ -29,26 +41,38 @@ export default function QuizForm({ tipo, questions, lessonSlug }: Props) {
 	const esPost = tipo === "post";
 
 	useEffect(() => {
-		// Prefill del correo (lo capturamos en la evaluación inicial).
-		const c = leerProgreso().correo;
-		if (c) setCorreo(c);
-		if (leerProgreso().completed.includes(lessonSlug)) setEstado("done");
+		// El nombre se captura en el diagnóstico inicial; se reutiliza en el final.
+		const p = leerProgreso();
+		if (p.nombre) setNombre(p.nombre);
+		if (p.correo) setCorreo(p.correo);
+		if (p.completed.includes(lessonSlug)) setEstado("done");
 	}, [lessonSlug]);
 
 	function setAnswer(qid: string, idx: number) {
 		setAnswers((prev) => ({ ...prev, [qid]: idx }));
 	}
 
+	function recolectar(): { respuestas: Record<string, string>; indices: Record<string, number> } {
+		const respuestas: Record<string, string> = {};
+		const indices: Record<string, number> = {};
+		for (const q of questions) {
+			respuestas[q.id] = q.options[answers[q.id]];
+			indices[q.id] = answers[q.id];
+		}
+		return { respuestas, indices };
+	}
+
 	function validar(): string | null {
-		if (!esPost && !nombre.trim()) return "Ingresa tu nombre completo.";
-		if (!validateUlimaEmail(correo))
-			return "Usa tu correo institucional que termina en @ulima.edu.pe.";
+		if (!nombre.trim()) return "Ingresa tu nombre completo.";
 		for (const q of questions) {
 			if (answers[q.id] == null)
 				return "Responde todas las preguntas antes de enviar.";
 		}
-		if (esPost && satisfaccion === 0)
-			return "Indica tu nivel de satisfacción con la unidad.";
+		if (esPost) {
+			if (!validateUlimaEmail(correo))
+				return "Usa tu correo institucional que termina en @aloe.ulima.edu.pe.";
+			if (satisfaccion === 0) return "Indica tu nivel de satisfacción con la unidad.";
+		}
 		return null;
 	}
 
@@ -60,36 +84,54 @@ export default function QuizForm({ tipo, questions, lessonSlug }: Props) {
 			setEstado("error");
 			return;
 		}
+
+		// DIAGNÓSTICO INICIAL: solo se guarda localmente (sin correo, sin red).
+		if (!esPost) {
+			guardarNombre(nombre.trim());
+			guardarPre(unidad, recolectar());
+			marcarLeccion(lessonSlug);
+			setEstado("done");
+			return;
+		}
+
+		// EVALUACIÓN FINAL: se consolidan todas las métricas y se envía una sola fila.
 		setEstado("sending");
 		setErrorMsg("");
 
 		const correoNorm = normalizeEmail(correo);
-		const respuestas: Record<string, string> = {};
-		const indices: Record<string, number> = {};
-		for (const q of questions) {
-			respuestas[q.id] = q.options[answers[q.id]];
-			indices[q.id] = answers[q.id];
+		const post = recolectar();
+		const pre = leerPre(unidad);
+
+		// Ejercicios del sandbox de ESTA unidad (por prefijo de id).
+		const prefijo = PREFIJO_EJERCICIOS[unidad] ?? "";
+		const todos = leerProgreso().ejercicios;
+		const ejercicios: Record<string, boolean> = {};
+		for (const [id, ok] of Object.entries(todos)) {
+			if (!prefijo || id.startsWith(prefijo)) ejercicios[id] = ok;
 		}
 
-		const payload: SurveyPayload = {
-			tipo,
-			unidad: 1,
+		const payload: FinalPayload = {
+			tipo: "final",
+			unidad,
+			nombre: nombre.trim(),
 			correo: correoNorm,
-			respuestas,
-			indices,
-			...(esPost
-				? { satisfaccion, recomienda, comentarios: comentarios.trim() }
-				: { nombre: nombre.trim() }),
+			pre,
+			post,
+			ejercicios,
+			satisfaccion,
+			recomienda,
+			comentarios: comentarios.trim(),
 		};
 
-		const result = await submitForm(payload);
+		const result = await submitFinal(payload);
 		if (result.ok) {
 			guardarCorreo(correoNorm);
+			guardarNombre(nombre.trim());
 			marcarLeccion(lessonSlug);
 			setEstado("done");
 		} else {
 			setErrorMsg(
-				"No pudimos guardar tu respuesta. Revisa tu conexión e inténtalo de nuevo.",
+				"No pudimos guardar tus resultados. Revisa tu conexión e inténtalo de nuevo.",
 			);
 			setEstado("error");
 		}
@@ -103,50 +145,56 @@ export default function QuizForm({ tipo, questions, lessonSlug }: Props) {
 					<strong>
 						{esPost
 							? "¡Evaluación final enviada! Completaste la Unidad."
-							: "¡Listo! Registramos tu evaluación inicial."}
+							: "¡Listo! Registramos tu diagnóstico inicial."}
 					</strong>
 					<p>
 						{esPost
-							? "Gracias por terminar. Tus respuestas quedaron guardadas."
-							: "Ya podemos medir tu avance. Continúa con la siguiente lección."}
+							? "Tus respuestas, ejercicios y diagnóstico quedaron guardados juntos."
+							: "Tus respuestas se guardaron en este dispositivo. Continúa con la siguiente lección; el correo se pedirá al final."}
 					</p>
 				</div>
 			</div>
 		);
 	}
 
-	const correoInvalido = estado === "error" && !validateUlimaEmail(correo);
+	const correoInvalido = esPost && estado === "error" && !validateUlimaEmail(correo);
 
 	return (
 		<form onSubmit={handleSubmit} className="ql-quiz" noValidate>
 			<div className="ql-fields">
-				{!esPost && (
+				<label className="ql-field">
+					<span>Nombre completo</span>
+					<input
+						type="text"
+						value={nombre}
+						onChange={(e) => setNombre(e.target.value)}
+						placeholder="Ej. Ana Pérez"
+						autoComplete="name"
+						required
+					/>
+				</label>
+				{esPost && (
 					<label className="ql-field">
-						<span>Nombre completo</span>
+						<span>Correo institucional (@aloe.ulima.edu.pe)</span>
 						<input
-							type="text"
-							value={nombre}
-							onChange={(e) => setNombre(e.target.value)}
-							placeholder="Ej. Ana Pérez"
-							autoComplete="name"
+							type="email"
+							value={correo}
+							onChange={(e) => setCorreo(e.target.value)}
+							placeholder="codigo@aloe.ulima.edu.pe"
+							autoComplete="email"
+							inputMode="email"
 							required
+							aria-invalid={correoInvalido}
 						/>
 					</label>
 				)}
-				<label className="ql-field">
-					<span>Correo institucional (@ulima.edu.pe)</span>
-					<input
-						type="email"
-						value={correo}
-						onChange={(e) => setCorreo(e.target.value)}
-						placeholder="codigo@ulima.edu.pe"
-						autoComplete="email"
-						inputMode="email"
-						required
-						aria-invalid={correoInvalido}
-					/>
-				</label>
 			</div>
+
+			{!esPost && (
+				<p className="ql-hint">
+					Tu correo se pedirá una sola vez al final de la unidad, junto con todos tus resultados.
+				</p>
+			)}
 
 			<ol className="ql-questions">
 				{questions.map((q, i) => {
@@ -241,7 +289,7 @@ export default function QuizForm({ tipo, questions, lessonSlug }: Props) {
 					? "Enviando…"
 					: esPost
 						? "Enviar y finalizar la unidad"
-						: "Enviar y continuar"}
+						: "Guardar y continuar"}
 			</button>
 		</form>
 	);

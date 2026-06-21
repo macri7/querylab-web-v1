@@ -63,10 +63,10 @@ const title = `${leccion.titulo} · Unidad ${unidad.numero}`;
 		)}
 
 		{leccion.tipo === "form-pre" && (
-			<QuizForm client:load tipo="pre" questions={PRE_QUESTIONS} lessonSlug={slug} />
+			<QuizForm client:load tipo="pre" questions={PRE_QUESTIONS} lessonSlug={slug} unidad={1} />
 		)}
 		{leccion.tipo === "form-post" && (
-			<QuizForm client:load tipo="post" questions={POST_QUESTIONS} lessonSlug={slug} />
+			<QuizForm client:load tipo="post" questions={POST_QUESTIONS} lessonSlug={slug} unidad={1} />
 		)}
 		{leccion.tipo === "ejercicios" && <Sandbox client:only="react" />}
 

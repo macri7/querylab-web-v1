@@ -1,7 +1,8 @@
 // Helpers compartidos por los formularios y el sandbox de Query Lab.
 
+/** Correo institucional de estudiante: termina en @aloe.ulima.edu.pe. */
 export function validateUlimaEmail(email: string): boolean {
-	return /^[^@\s]+@ulima\.edu\.pe$/i.test((email || "").trim());
+	return /^[^@\s]+@aloe\.ulima\.edu\.pe$/i.test((email || "").trim());
 }
 
 /** Normaliza el correo para que sirva como llave estable (minúsculas, sin espacios). */
@@ -9,26 +10,32 @@ export function normalizeEmail(email: string): string {
 	return (email || "").trim().toLowerCase();
 }
 
-export interface SurveyPayload {
-	tipo: "pre" | "post";
-	unidad: number;
-	nombre?: string;
-	correo: string;
+/** Respuestas de un cuestionario (pre o post). */
+export interface RespuestasCuestionario {
 	/** Texto de la opción elegida por pregunta (q1..q5). Para leer en la hoja. */
 	respuestas: Record<string, string>;
 	/** Índice de la opción elegida por pregunta. El backend calcula el puntaje con esto. */
 	indices: Record<string, number>;
-	comentarios?: string;
-	recomienda?: string;
-	satisfaccion?: number;
 }
 
-export interface EjercicioPayload {
-	tipo: "ejercicios";
+/**
+ * Envío único y consolidado que se manda al terminar la unidad (form final).
+ * Reúne identidad + pre-test + ejercicios + post-test + satisfacción en una sola fila.
+ */
+export interface FinalPayload {
+	tipo: "final";
 	unidad: number;
+	nombre: string;
 	correo: string;
-	ejercicio_id: string;
-	aprobado: boolean;
+	/** Respuestas del diagnóstico inicial (capturadas localmente, sin correo). */
+	pre: RespuestasCuestionario;
+	/** Respuestas de la evaluación final. */
+	post: RespuestasCuestionario;
+	/** Resultado de los ejercicios del sandbox de esta unidad: id -> aprobado. */
+	ejercicios: Record<string, boolean>;
+	satisfaccion: number;
+	recomienda: string;
+	comentarios: string;
 }
 
 export interface SubmitResult {
@@ -70,22 +77,7 @@ async function enviar(payload: object): Promise<SubmitResult> {
 	}
 }
 
-export function submitForm(payload: SurveyPayload): Promise<SubmitResult> {
-	return enviar(payload);
-}
-
-/** Registra (no bloqueante) que un ejercicio fue aprobado/intentado. */
-export function enviarEjercicio(
-	correo: string,
-	ejercicioId: string,
-	aprobado: boolean,
-): Promise<SubmitResult> {
-	const payload: EjercicioPayload = {
-		tipo: "ejercicios",
-		unidad: 1,
-		correo: normalizeEmail(correo),
-		ejercicio_id: ejercicioId,
-		aprobado,
-	};
+/** Envía la fila consolidada de la unidad al backend. */
+export function submitFinal(payload: FinalPayload): Promise<SubmitResult> {
 	return enviar(payload);
 }
